@@ -5,8 +5,8 @@
 
 class AuthenticationManager {
     constructor() {
-        this.supabaseUrl = 'https://seu-projeto.supabase.co';
-        this.supabaseKey = 'sua-chave-publica';
+        this.supabaseUrl = 'https://ohmjnscxxcgtjummrvhn.supabase.co';
+        this.supabaseKey = 'sb_publishable_LFDm0ao9Tszbi8VZCxnt_w_RcNz-uEV';
         this.isLoading = false;
         this.init();
     }
