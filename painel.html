@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="manifest" href="/manifest.json">
+    <title>Painel - AdminStore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16c784;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --success: #27ae60;
+            --info: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            color: #333;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--primary);
+            color: white;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            width: 250px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: #ccc;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(22, 199, 132, 0.2);
+            color: var(--secondary);
+        }
+
+        .sidebar-nav a.active {
+            border-left: 4px solid var(--secondary);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .topbar {
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .store-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .store-logo {
+            width: 50px;
+            height: 50px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .store-logo img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .store-name {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .user-menu {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #14a85c;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .card-title {
+            color: #999;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-change {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .card-change.positive {
+            color: var(--success);
+        }
+
+        .card-change.negative {
+            color: var(--danger);
+        }
+
+        .quick-actions {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .quick-actions h3 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-btn {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #16c784, #14a85c);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(22, 199, 132, 0.3);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .action-btn.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .action-btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .table {
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+        }
+
+        .table-body {
+            padding: 1rem;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row.header {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .form-buttons button {
+            flex: 1;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -250px;
+                transition: left 0.3s;
+                z-index: 150;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .table-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: var(--secondary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <svg width="30" height="30" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect fill="currentColor" width="100" height="100" rx="20"/>
+                    <text x="50" y="55" font-size="50" font-weight="bold" fill="currentColor" text-anchor="middle">AS</text>
+                </svg>
+                AdminStore
+            </div>
+            <nav class="sidebar-nav">
+                <li><a href="#dashboard" onclick="navigateTo('dashboard')" class="nav-link active">📊 Dashboard</a></li>
+                <li><a href="#pos" onclick="navigateTo('pos')" class="nav-link">🛒 PDV (Vendas)</a></li>
+                <li><a href="#scanner" onclick="navigateTo('scanner')" class="nav-link">📱 Scanner QR</a></li>
+                <li><a href="#produtos" onclick="navigateTo('produtos')" class="nav-link">📦 Produtos</a></li>
+                <li><a href="#vendas" onclick="navigateTo('vendas')" class="nav-link">💰 Vendas</a></li>
+                <li><a href="#clientes" onclick="navigateTo('clientes')" class="nav-link">👥 Clientes</a></li>
+                <li><a href="#relatorios" onclick="navigateTo('relatorios')" class="nav-link">📈 Relatórios</a></li>
+                <li><a href="#configuracoes" onclick="navigateTo('configuracoes')" class="nav-link">⚙️ Configurações</a></li>
+                <li><a href="#" onclick="logout()" class="nav-link" style="color: #e74c3c;">🚪 Sair</a></li>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="store-info">
+                    <div class="store-logo" id="storeLogoTop">
+                        <span style="color: #999;">Logo</span>
+                    </div>
+                    <div>
+                        <div class="store-name" id="storeNameTop">Minha Loja</div>
+                        <div style="color: #999; font-size: 0.9rem;">Moçambique</div>
+                    </div>
+                </div>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userInitials">U</div>
+                    <button class="btn btn-danger" onclick="logout()">Sair</button>
+                </div>
+            </div>
+
+            <!-- Alert -->
+            <div id="alert" class="alert"></div>
+
+            <!-- Dashboard Content -->
+            <div id="dashboardContent">
+                <!-- Cards de Estatísticas -->
+                <div class="grid" id="statsGrid">
+                    <div class="card">
+                        <div class="card-title">Vendas Hoje</div>
+                        <div class="card-value" id="todaySales">0,00 MT</div>
+                        <div class="card-change positive">↑ 12.5% vs ontem</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Vendas Este Mês</div>
+                        <div class="card-value" id="monthlySales">0,00 MT</div>
+                        <div class="card-change positive">↑ 8.3% vs mês anterior</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Nº Transações</div>
+                        <div class="card-value" id="transactionCount">0</div>
+                        <div class="card-change">Últimas 24h</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Clientes</div>
+                        <div class="card-value" id="clientCount">0</div>
+                        <div class="card-change">Total registados</div>
+                    </div>
+                </div>
+
+                <!-- Ações Rápidas -->
+                <div class="quick-actions">
+                    <h3>Ações Rápidas</h3>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="navigateTo('pos')">
+                            <span style="font-size: 1.5rem;">🛒</span>
+                            Nova Venda
+                        </button>
+                        <button class="action-btn secondary" onclick="navigateTo('scanner')">
+                            <span style="font-size: 1.5rem;">📱</span>
+                            Scanner QR
+                        </button>
+                        <button class="action-btn secondary" onclick="openModalProduto()">
+                            <span style="font-size: 1.5rem;">📦</span>
+                            Novo Produto
+                        </button>
+                        <button class="action-btn warning" onclick="openModalCliente()">
+                            <span style="font-size: 1.5rem;">👥</span>
+                            Novo Cliente
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Últimas Vendas -->
+                <div class="card">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Últimas Vendas</h3>
+                    <div class="table">
+                        <div class="table-row header">
+                            <div>ID</div>
+                            <div>Cliente</div>
+                            <div>Valor</div>
+                            <div>Data</div>
+                        </div>
+                        <div class="table-body" id="vendastable">
+                            <div class="table-row">
+                                <div colspan="4" style="text-align: center; color: #999;">Nenhuma venda registada</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outros Conteúdos -->
+            <div id="posContent" style="display: none;"></div>
+            <div id="scannerContent" style="display: none;"></div>
+            <div id="produtosContent" style="display: none;"></div>
+            <div id="vendastContent" style="display: none;"></div>
+            <div id="clientesContent" style="display: none;"></div>
+            <div id="relatoriosContent" style="display: none;"></div>
+            <div id="configuracoesContent" style="display: none;"></div>
+        </main>
+    </div>
+
+    <!-- Modal Produto -->
+    <div id="produtoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Novo Produto</h2>
+                <button class="close-btn" onclick="closeProdutoModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label>Nome do Produto:</label>
+                <input type="text" id="produtoNome" placeholder="Ex: Arroz 5kg">
+            </div>
+            <div class="form-group">
+                <label>SKU/Código:</label>
+                <input type="text" id="produtoSku" placeholder="EAN ou SKU">
+            </div>
+            <div class="form-group">
+                <label>Preço (MT):</label>
+                <input type="number" id="produtoPrice" placeholder="0.00" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Quantidade:</label>
+                <input type="number" id="produtoQtd" placeholder="0" min="0">
+            </div>
+            <div class="form-group">
+                <label>Categoria:</label>
+                <select id="produtoCategoria">
+                    <option value="">Selecione categoria</option>
+                    <option value="alimentos">Alimentos</option>
+                    <option value="bebidas">Bebidas</option>
+                    <option value="higiene">Higiene</option>
+                    <option value="limpeza">Limpeza</option>
+                    <option value="outros">Outros</option>
+                </select>
+            </div>
+            <div class="form-buttons">
+                <button class="btn btn-primary" onclick="saveProduto()">Salvar</button>
+                <button class="btn" style="background: #ddd; color: #333;" onclick="closeProdutoModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cliente -->
+    <div id="clienteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Novo Cliente</h2>
+                <button class="close-btn" onclick="closeClienteModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label>Nome Completo:</label>
+                <input type="text" id="clienteNome" placeholder="Ex: João Silva">
+            </div>
+            <div class="form-group">
+                <label>Telefone:</label>
+                <input type="tel" id="clienteTel" placeholder="+258 82 123 4567">
+            </div>
+            <div class="form-group">
+                <label>Email (opcional):</label>
+                <input type="email" id="clienteEmail" placeholder="email@example.com">
+            </div>
+            <div class="form-group">
+                <label>Endereço:</label>
+                <textarea id="clienteEndereco" placeholder="Rua, número, bairro..."></textarea>
+            </div>
+            <div class="form-buttons">
+                <button class="btn btn-primary" onclick="saveCliente()">Salvar</button>
+                <button class="btn" style="background: #ddd; color: #333;" onclick="closeClienteModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://seu-projeto.supabase.co';
+        const SUPABASE_KEY = 'sua-chave-publica';
+
+        let appState = {
+            user: null,
+            store: null,
+            sales: [],
+            products: [],
+            clients: []
+        };
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/index.html';
+                return;
+            }
+
+            loadStoreData();
+            loadStatistics();
+        });
+
+        // Carregar dados da loja
+        async function loadStoreData() {
+            try {
+                // Simular carregamento de dados
+                const storeData = {
+                    name: 'Loja Premium',
+                    country: 'MZ',
+                    logo: null
+                };
+
+                appState.store = storeData;
+                document.getElementById('storeNameTop').textContent = storeData.name;
+                document.getElementById('userInitials').textContent = storeData.name.charAt(0);
+            } catch (error) {
+                console.error('Erro ao carregar loja:', error);
+            }
+        }
+
+        // Carregar estatísticas
+        async function loadStatistics() {
+            try {
+                // Dados de exemplo
+                document.getElementById('todaySales').textContent = '15,450.50 MT';
+                document.getElementById('monthlySales').textContent = '245,000.00 MT';
+                document.getElementById('transactionCount').textContent = '42';
+                document.getElementById('clientCount').textContent = '125';
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas:', error);
+            }
+        }
+
+        // Navegar entre seções
+        function navigateTo(section) {
+            // Esconder todos os conteúdos
+            document.getElementById('dashboardContent').style.display = 'none';
+            document.getElementById('posContent').style.display = 'none';
+            document.getElementById('scannerContent').style.display = 'none';
+            document.getElementById('produtosContent').style.display = 'none';
+            document.getElementById('vendastContent').style.display = 'none';
+            document.getElementById('clientesContent').style.display = 'none';
+            document.getElementById('relatoriosContent').style.display = 'none';
+            document.getElementById('configuracoesContent').style.display = 'none';
+
+            // Remover classe active de todos os links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Mostrar conteúdo selecionado
+            switch(section) {
+                case 'dashboard':
+                    document.getElementById('dashboardContent').style.display = 'block';
+                    break;
+                case 'pos':
+                    document.getElementById('posContent').style.display = 'block';
+                    window.location.href = '/pos.html';
+                    break;
+                case 'scanner':
+                    document.getElementById('scannerContent').style.display = 'block';
+                    window.location.href = '/scanner.html';
+                    break;
+                case 'produtos':
+                    document.getElementById('produtosContent').style.display = 'block';
+                    loadProdutos();
+                    break;
+                case 'vendas':
+                    document.getElementById('vendastContent').style.display = 'block';
+                    loadVendas();
+                    break;
+                case 'clientes':
+                    document.getElementById('clientesContent').style.display = 'block';
+                    loadClientes();
+                    break;
+            }
+
+            // Adicionar classe active ao link clicado
+            event.target.closest('.nav-link').classList.add('active');
+        }
+
+        // Modais
+        function openModalProduto() {
+            document.getElementById('produtoModal').classList.add('show');
+        }
+
+        function closeProdutoModal() {
+            document.getElementById('produtoModal').classList.remove('show');
+            document.getElementById('produtoNome').value = '';
+            document.getElementById('produtoSku').value = '';
+            document.getElementById('produtoPrice').value = '';
+            document.getElementById('produtoQtd').value = '';
+        }
+
+        function openModalCliente() {
+            document.getElementById('clienteModal').classList.add('show');
+        }
+
+        function closeClienteModal() {
+            document.getElementById('clienteModal').classList.remove('show');
+            document.getElementById('clienteNome').value = '';
+            document.getElementById('clienteTel').value = '';
+            document.getElementById('clienteEmail').value = '';
+            document.getElementById('clienteEndereco').value = '';
+        }
+
+        // Salvar produto
+        async function saveProduto() {
+            const nome = document.getElementById('produtoNome').value;
+            const sku = document.getElementById('produtoSku').value;
+            const price = document.getElementById('produtoPrice').value;
+            const qtd = document.getElementById('produtoQtd').value;
+
+            if (!nome || !price) {
+                showAlert('Preencha todos os campos obrigatórios', 'error');
+                return;
+            }
+
+            try {
+                // Salvar no Supabase
+                showAlert('Produto adicionado com sucesso!', 'success');
+                closeProdutoModal();
+            } catch (error) {
+                showAlert('Erro ao salvar produto', 'error');
+            }
+        }
+
+        // Salvar cliente
+        async function saveCliente() {
+            const nome = document.getElementById('clienteNome').value;
+            const tel = document.getElementById('clienteTel').value;
+
+            if (!nome) {
+                showAlert('Preencha o nome do cliente', 'error');
+                return;
+            }
+
+            try {
+                showAlert('Cliente adicionado com sucesso!', 'success');
+                closeClienteModal();
+            } catch (error) {
+                showAlert('Erro ao salvar cliente', 'error');
+            }
+        }
+
+        // Carregar seções
+        async function loadProdutos() {
+            // Implementar carregamento de produtos
+        }
+
+        async function loadVendas() {
+            // Implementar carregamento de vendas
+        }
+
+        async function loadClientes() {
+            // Implementar carregamento de clientes
+        }
+
+        // Mostrar alerta
+        function showAlert(message, type) {
+            const alertEl = document.getElementById('alert');
+            alertEl.textContent = message;
+            alertEl.className = `alert alert-${type} show`;
+            setTimeout(() => alertEl.classList.remove('show'), 3000);
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Tem a certeza que deseja sair?')) {
+                localStorage.removeItem('token');
+                window.location.href = '/index.html';
+            }
+        }
+
+        // Fechar modais ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
