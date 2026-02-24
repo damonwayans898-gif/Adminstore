@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdminStore - Confirmação de Email</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .email-header-logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .email-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .email-header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .email-body {
+            padding: 40px;
+            background: white;
+        }
+
+        .email-section {
+            margin-bottom: 2rem;
+        }
+
+        .email-section h2 {
+            color: #1a1a2e;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .email-section p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .verification-code {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            border: 2px dashed #16c784;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .code-label {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #16c784;
+            letter-spacing: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+        }
+
+        .code-validity {
+            color: #f39c12;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .email-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #16c784, #14a85c);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 1rem 0;
+            transition: all 0.3s;
+        }
+
+        .email-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(22, 199, 132, 0.3);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            min-width: 40px;
+        }
+
+        .feature-content h3 {
+            color: #1a1a2e;
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .feature-content p {
+            color: #999;
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .info-box {
+            background: #f5f7fa;
+            border-left: 4px solid #16c784;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+        }
+
+        .info-box h3 {
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .email-footer {
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+            padding: 30px 40px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        .footer-links {
+            margin: 1rem 0;
+        }
+
+        .footer-links a {
+            color: #16c784;
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 2rem 0;
+        }
+
+        .steps {
+            counter-reset: step-counter;
+            margin: 2rem 0;
+        }
+
+        .step {
+            counter-increment: step-counter;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .step-number {
+            background: #16c784;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            color: #1a1a2e;
+            margin-bottom: 0.3rem;
+        }
+
+        .step-content p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
+            .email-container {
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .email-header {
+                padding: 30px 20px;
+            }
+
+            .email-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .email-body {
+                padding: 20px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .code-display {
+                font-size: 2rem;
+                letter-spacing: 5px;
+            }
+        }
+
+        /* Variações de Email */
+        .email-welcome .email-header {
+            background: linear-gradient(135deg, #16c784, #14a85c);
+        }
+
+        .email-verification .email-header {
+            background: linear-gradient(135deg, #0066ff, #0052cc);
+        }
+
+        .email-success .email-header {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        .email-alert .email-header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+    </style>
+</head>
+<body>
+    <!-- TEMPLATE 1: CONFIRMAÇÃO DE EMAIL -->
+    <div class="email-container email-verification">
+        <div class="email-header">
+            <div class="email-header-logo">📧</div>
+            <h1>Confirme seu Email</h1>
+            <p>Última etapa para ativar sua conta</p>
+        </div>
+
+        <div class="email-body">
+            <div class="email-section">
+                <h2>Olá! 👋</h2>
+                <p>Obrigado por se registar no AdminStore. Para ativar sua conta, confirme seu email usando o código abaixo:</p>
+            </div>
+
+            <div class="verification-code">
+                <div class="code-label">Código de Confirmação</div>
+                <div class="code-display">{{CODE}}</div>
+                <div class="code-validity">Válido por 15 minutos</div>
+            </div>
+
+            <div class="email-section">
+                <p><strong>Como funciona:</strong></p>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Copie o código</h4>
+                            <p>Copie o código acima (6 dígitos)</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Aceda ao AdminStore</h4>
+                            <p>Volte à página de registro</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Cole o código</h4>
+                            <p>Insira os 6 dígitos nos campos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>⚠️ Importante</h3>
+                <p>Se não solicitou este código, ignore este email. Alguém pode ter inserido seu endereço por engano.</p>
+            </div>
+
+            <div class="email-section">
+                <p>Se tiver problemas, contacte nosso suporte em <strong>support@adminstore.local</strong></p>
+            </div>
+        </div>
+
+        <div class="email-footer">
+            <p>© 2026 AdminStore - Sistema de Gestão de Loja Profissional</p>
+            <div class="footer-links">
+                <a href="https://adminstore.local">Website</a>
+                <a href="https://docs.adminstore.local">Documentação</a>
+                <a href="https://adminstore.local/support">Suporte</a>
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- TEMPLATE 2: BEM-VINDO APÓS CONFIRMAÇÃO -->
+    <div class="email-container email-welcome">
+        <div class="email-header">
+            <div class="email-header-logo">🎉</div>
+            <h1>Bem-vindo ao AdminStore!</h1>
+            <p>Sua conta foi ativada com sucesso</p>
+        </div>
+
+        <div class="email-body">
+            <div class="email-section">
+                <h2>Conta Ativada ✅</h2>
+                <p>Parabéns {{USER_NAME}}! Sua loja está pronta para começar a vender.</p>
+            </div>
+
+            <h3 style="color: #1a1a2e; margin-top: 2rem; margin-bottom: 1rem;">🚀 Próximos Passos</h3>
+            
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">📦</div>
+                    <div class="feature-content">
+                        <h3>Adicionar Produtos</h3>
+                        <p>Configure seu catálogo</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🖨️</div>
+                    <div class="feature-content">
+                        <h3>Conectar Impressora</h3>
+                        <p>Configure impressora térmica</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💳</div>
+                    <div class="feature-content">
+                        <h3>Ativar Pagamentos</h3>
+                        <p>Configure M-Pesa, E-Mola, etc</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-content">
+                        <h3>Scanner QR</h3>
+                        <p>Comece a ler códigos</p>
+                    </div>
+                </div>
+            </div>
+
+            <a href="https://adminstore.local/painel" class="email-button" style="display: block; text-align: center;">
+                Aceder ao Dashboard →
+            </a>
+
+            <div class="info-box">
+                <h3>📚 Precisa de Ajuda?</h3>
+                <p>Consulte nossa documentação completa em <strong>https://docs.adminstore.local</strong> ou contacte support@adminstore.local</p>
+            </div>
+        </div>
+
+        <div class="email-footer">
+            <p>© 2026 AdminStore - Sistema de Gestão de Loja Profissional</p>
+            <div class="footer-links">
+                <a href="https://adminstore.local">Website</a>
+                <a href="https://docs.adminstore.local">Documentação</a>
+                <a href="https://adminstore.local/support">Suporte</a>
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- TEMPLATE 3: NOTIFICAÇÃO DE VENDA -->
+    <div class="email-container email-success">
+        <div class="email-header">
+            <div class="email-header-logo">💰</div>
+            <h1>Nova Venda Registada!</h1>
+            <p>Transação bem-sucedida</p>
+        </div>
+
+        <div class="email-body">
+            <div class="email-section">
+                <h2>Venda Confirmada ✅</h2>
+                <p>Uma nova venda foi processada com sucesso na sua loja.</p>
+            </div>
+
+            <div class="info-box">
+                <h3>📊 Detalhes da Venda</h3>
+                <p><strong>ID Transação:</strong> {{TRANSACTION_ID}}</p>
+                <p><strong>Data/Hora:</strong> {{DATETIME}}</p>
+                <p><strong>Total:</strong> {{TOTAL_AMOUNT}}</p>
+                <p><strong>Método Pagamento:</strong> {{PAYMENT_METHOD}}</p>
+                <p><strong>Número de Itens:</strong> {{ITEM_COUNT}}</p>
+            </div>
+
+            <h3 style="color: #1a1a2e; margin-top: 2rem; margin-bottom: 1rem;">📋 Itens</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="background: #f5f7fa; border-bottom: 2px solid #eee;">
+                    <th style="padding: 0.8rem; text-align: left;">Produto</th>
+                    <th style="padding: 0.8rem; text-align: center;">Qtd</th>
+                    <th style="padding: 0.8rem; text-align: right;">Preço</th>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 0.8rem;">{{ITEM_NAME}}</td>
+                    <td style="padding: 0.8rem; text-align: center;">{{QUANTITY}}</td>
+                    <td style="padding: 0.8rem; text-align: right;">{{ITEM_TOTAL}}</td>
+                </tr>
+            </table>
+
+            <a href="https://adminstore.local/painel" class="email-button" style="display: block; text-align: center;">
+                Ver no Dashboard →
+            </a>
+        </div>
+
+        <div class="email-footer">
+            <p>© 2026 AdminStore - Sistema de Gestão de Loja Profissional</p>
+            <div class="footer-links">
+                <a href="https://adminstore.local">Website</a>
+                <a href="https://docs.adminstore.local">Documentação</a>
+                <a href="https://adminstore.local/support">Suporte</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

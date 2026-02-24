@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="manifest" href="/manifest.json">
+    <title>Scanner QR - AdminStore</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16c784;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --success: #27ae60;
+            --light: #ecf0f1;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--primary);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .scanner-container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .scanner-header {
+            background: linear-gradient(135deg, var(--primary), #16213e);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .scanner-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .scanner-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .scanner-content {
+            padding: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab-btn {
+            padding: 1rem;
+            border: none;
+            background: none;
+            color: #999;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: var(--secondary);
+            border-bottom-color: var(--secondary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        #qr-reader {
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 3px solid #eee;
+            margin-bottom: 1.5rem;
+        }
+
+        .scanner-info {
+            background: linear-gradient(135deg, rgba(22, 199, 132, 0.1), rgba(22, 199, 132, 0.05));
+            border-left: 4px solid var(--secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .scanner-info strong {
+            color: var(--secondary);
+        }
+
+        .manual-input {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .manual-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .manual-input input:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .manual-input button {
+            padding: 0.75rem 1.5rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .manual-input button:hover {
+            background: #14a85c;
+            transform: translateY(-2px);
+        }
+
+        .scan-result {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .scan-result.show {
+            display: block;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .scan-result-header {
+            color: #155724;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .scan-result-content {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .scan-result-item {
+            margin-bottom: 0.8rem;
+        }
+
+        .scan-result-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .scan-result-value {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .product-match {
+            background: linear-gradient(135deg, var(--secondary), #14a85c);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .product-match.show {
+            display: block;
+        }
+
+        .product-match-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-match-price {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-match-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: white;
+            color: var(--secondary);
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .product-match-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #14a85c;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #ddd;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #bbb;
+        }
+
+        .camera-toggle {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+
+        .camera-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .camera-btn.active {
+            border-color: var(--secondary);
+            background: rgba(22, 199, 132, 0.1);
+            color: var(--secondary);
+        }
+
+        .camera-btn:hover {
+            border-color: var(--secondary);
+        }
+
+        .history {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .history-item {
+            padding: 0.8rem;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid var(--secondary);
+        }
+
+        .history-item-code {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .history-item-time {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .history-item-btn {
+            padding: 0.3rem 0.6rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .history-item-btn:hover {
+            background: #14a85c;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            animation: slideDown 0.3s;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border: 2px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border: 2px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .qr-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            border: 3px solid var(--secondary);
+            box-shadow: inset 0 0 20px rgba(22, 199, 132, 0.3);
+            border-radius: 10px;
+            pointer-events: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: inset 0 0 20px rgba(22, 199, 132, 0.3), 0 0 20px rgba(22, 199, 132, 0.3);
+            }
+            50% {
+                box-shadow: inset 0 0 30px rgba(22, 199, 132, 0.5), 0 0 30px rgba(22, 199, 132, 0.5);
+            }
+        }
+
+        .camera-permission {
+            text-align: center;
+            padding: 2rem;
+            background: #f8d7da;
+            border: 2px solid #f5c6cb;
+            border-radius: 10px;
+            color: #721c24;
+        }
+
+        .camera-permission-btn {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: #721c24;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .scanner-container {
+                margin: 0;
+                border-radius: 10px;
+                max-height: 100vh;
+            }
+
+            .scanner-header {
+                padding: 1.5rem;
+            }
+
+            .scanner-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .scanner-content {
+                padding: 1rem;
+            }
+
+            .tabs {
+                margin-bottom: 1rem;
+            }
+
+            .tab-btn {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--secondary), #14a85c);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="scanner-container">
+        <!-- Header -->
+        <div class="scanner-header">
+            <h1>📱 Scanner QR/Código de Barras</h1>
+            <p>Leia códigos para adicionar produtos ou registar dados</p>
+        </div>
+
+        <!-- Content -->
+        <div class="scanner-content">
+            <!-- Alert -->
+            <div id="alert" class="alert" style="display: none;"></div>
+
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="scannedCount">0</div>
+                    <div class="stat-label">Itens Lidos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="matchedCount">0</div>
+                    <div class="stat-label">Encontrados</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('camera')">📷 Câmera</button>
+                <button class="tab-btn" onclick="switchTab('manual')">⌨️ Manual</button>
+                <button class="tab-btn" onclick="switchTab('history')">📋 Histórico</button>
+            </div>
+
+            <!-- Tab: Câmera -->
+            <div id="cameraTab" class="tab-content active">
+                <div class="scanner-info">
+                    <strong>💡 Dica:</strong> Aponte a câmera para o código QR ou código de barras. O sistema reconhecerá automaticamente.
+                </div>
+
+                <div id="cameraPermissionError" class="camera-permission" style="display: none;">
+                    <p>É necessária permissão para aceder à câmera</p>
+                    <button class="camera-permission-btn" onclick="requestCameraPermission()">Permitir Câmera</button>
+                </div>
+
+                <div id="qr-reader"></div>
+
+                <div class="camera-toggle">
+                    <button class="camera-btn active" id="backCameraBtn" onclick="switchCamera('back')">Câmera Traseira</button>
+                    <button class="camera-btn" id="frontCameraBtn" onclick="switchCamera('front')">Câmera Frontal</button>
+                </div>
+
+                <div id="scanResult" class="scan-result">
+                    <div class="scan-result-header">✓ Código Detectado</div>
+                    <div class="scan-result-content">
+                        <div class="scan-result-item">
+                            <div class="scan-result-label">Tipo:</div>
+                            <div class="scan-result-value" id="resultType">—</div>
+                        </div>
+                        <div class="scan-result-item">
+                            <div class="scan-result-label">Código:</div>
+                            <div class="scan-result-value" id="resultCode">—</div>
+                        </div>
+                        <div class="scan-result-item">
+                            <div class="scan-result-label">Hora:</div>
+                            <div class="scan-result-label" id="resultTime">—</div>
+                        </div>
+                    </div>
+
+                    <div class="product-match" id="productMatch">
+                        <div class="product-match-name" id="productName">—</div>
+                        <div class="product-match-price" id="productPrice">—</div>
+                        <button class="product-match-btn" onclick="addProductToCart()">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" id="startBtn" onclick="startScanner()">Iniciar Scanner</button>
+                    <button class="btn btn-secondary" id="stopBtn" onclick="stopScanner()" style="display: none;">Parar Scanner</button>
+                </div>
+            </div>
+
+            <!-- Tab: Manual -->
+            <div id="manualTab" class="tab-content">
+                <div class="scanner-info">
+                    <strong>💡 Dica:</strong> Insira manualmente o código ou escaneie para este campo.
+                </div>
+
+                <div class="manual-input">
+                    <input type="text" id="manualCode" placeholder="Código QR ou EAN..." onkeypress="handleManualInput(event)">
+                    <button onclick="processManualCode()">Ler</button>
+                </div>
+
+                <div id="manualResult" class="scan-result">
+                    <div class="scan-result-header">✓ Código Processado</div>
+                    <div class="scan-result-content">
+                        <div class="scan-result-item">
+                            <div class="scan-result-label">Código:</div>
+                            <div class="scan-result-value" id="manualResultCode">—</div>
+                        </div>
+                    </div>
+                    <div class="product-match" id="manualProductMatch">
+                        <div class="product-match-name" id="manualProductName">—</div>
+                        <div class="product-match-price" id="manualProductPrice">—</div>
+                        <button class="product-match-btn" onclick="addProductToCart()">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Histórico -->
+            <div id="historyTab" class="tab-content">
+                <div class="scanner-info">
+                    <strong>📋 Histórico:</strong> Últimos códigos lidos durante esta sessão.
+                </div>
+
+                <div class="history">
+                    <div class="history-title">Códigos Lidos:</div>
+                    <div id="historyList">
+                        <div style="text-align: center; color: #999; padding: 2rem;">
+                            Nenhum código lido ainda
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls" style="margin-top: 1rem;">
+                    <button class="btn btn-secondary" onclick="clearHistory()">Limpar Histórico</button>
+                    <button class="btn btn-primary" onclick="goBack()">Voltar ao PDV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const mockProducts = [
+            { id: 1, name: 'Arroz 5kg', sku: 'ARR001', price: 450 },
+            { id: 2, name: 'Feijão 1kg', sku: 'FEI001', price: 250 },
+            { id: 3, name: 'Óleo 1L', sku: 'OLE001', price: 180 },
+            { id: 4, name: 'Sal 1kg', sku: 'SAL001', price: 50 },
+            { id: 5, name: 'Açúcar 1kg', sku: 'ACU001', price: 120 },
+        ];
+
+        let appState = {
+            scanner: null,
+            isScanning: false,
+            scanHistory: [],
+            currentCamera: 'back',
+            scannedCount: 0,
+            matchedCount: 0,
+            lastScannedProduct: null
+        };
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/index.html';
+                return;
+            }
+
+            loadHistory();
+        });
+
+        // Switch de abas
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(tab + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+
+            if (tab === 'camera' && !appState.isScanning) {
+                setTimeout(() => startScanner(), 300);
+            }
+        }
+
+        // Iniciar scanner
+        function startScanner() {
+            if (appState.isScanning) return;
+
+            if (!appState.scanner) {
+                appState.scanner = new Html5Qrcode('qr-reader');
+            }
+
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'block';
+
+            const facingMode = appState.currentCamera === 'back' ? 'environment' : 'user';
+
+            appState.scanner.start(
+                { facingMode: facingMode },
+                { fps: 15, qrbox: 250 },
+                (decodedText) => {
+                    handleScannedCode(decodedText);
+                },
+                (error) => {
+                    if (error.name === 'NotAllowedError') {
+                        document.getElementById('cameraPermissionError').style.display = 'block';
+                    }
+                }
+            ).then(() => {
+                appState.isScanning = true;
+                showAlert('Scanner iniciado', 'success');
+            }).catch(err => {
+                console.error('Erro ao iniciar scanner:', err);
+                if (err.name === 'NotAllowedError') {
+                    document.getElementById('cameraPermissionError').style.display = 'block';
+                }
+                showAlert('Erro ao iniciar câmera', 'error');
+            });
+        }
+
+        // Parar scanner
+        function stopScanner() {
+            if (appState.scanner && appState.isScanning) {
+                appState.scanner.stop().then(() => {
+                    appState.isScanning = false;
+                    document.getElementById('stopBtn').style.display = 'none';
+                    document.getElementById('startBtn').style.display = 'block';
+                    showAlert('Scanner parado', 'info');
+                }).catch(err => {
+                    console.error('Erro ao parar scanner:', err);
+                });
+            }
+        }
+
+        // Trocar câmera
+        function switchCamera(camera) {
+            appState.currentCamera = camera;
+
+            document.getElementById('backCameraBtn').classList.remove('active');
+            document.getElementById('frontCameraBtn').classList.remove('active');
+
+            if (camera === 'back') {
+                document.getElementById('backCameraBtn').classList.add('active');
+            } else {
+                document.getElementById('frontCameraBtn').classList.add('active');
+            }
+
+            if (appState.isScanning) {
+                stopScanner();
+                setTimeout(() => startScanner(), 500);
+            }
+        }
+
+        // Processar código escaneado
+        function handleScannedCode(code) {
+            appState.scannedCount++;
+            updateStats();
+
+            // Registar no histórico
+            const scanItem = {
+                code: code,
+                timestamp: new Date().toISOString(),
+                type: code.length === 12 || code.length === 13 ? 'EAN' : 'QR'
+            };
+
+            appState.scanHistory.unshift(scanItem);
+            if (appState.scanHistory.length > 50) {
+                appState.scanHistory.pop();
+            }
+
+            saveHistory();
+            updateHistoryDisplay();
+
+            // Mostrar resultado
+            showScanResult(code, scanItem.type);
+
+            // Procurar produto
+            const product = mockProducts.find(p => p.sku === code || p.id === parseInt(code));
+            if (product) {
+                appState.matchedCount++;
+                appState.lastScannedProduct = product;
+                showProductMatch(product);
+            }
+        }
+
+        // Mostrar resultado do scan
+        function showScanResult(code, type) {
+            document.getElementById('resultType').textContent = type;
+            document.getElementById('resultCode').textContent = code;
+            document.getElementById('resultTime').textContent = new Date().toLocaleTimeString('pt-PT');
+            document.getElementById('scanResult').classList.add('show');
+        }
+
+        // Mostrar correspondência de produto
+        function showProductMatch(product) {
+            document.getElementById('productName').textContent = product.name;
+            document.getElementById('productPrice').textContent = formatMoney(product.price);
+            document.getElementById('productMatch').classList.add('show');
+
+            // Também mostrar na aba manual
+            document.getElementById('manualProductName').textContent = product.name;
+            document.getElementById('manualProductPrice').textContent = formatMoney(product.price);
+            document.getElementById('manualProductMatch').classList.add('show');
+        }
+
+        // Processamento manual
+        function handleManualInput(event) {
+            if (event.key === 'Enter') {
+                processManualCode();
+            }
+        }
+
+        function processManualCode() {
+            const code = document.getElementById('manualCode').value.trim();
+            if (!code) {
+                showAlert('Insira um código', 'error');
+                return;
+            }
+
+            handleScannedCode(code);
+            document.getElementById('manualCode').value = '';
+        }
+
+        // Adicionar produto ao carrinho
+        function addProductToCart() {
+            if (!appState.lastScannedProduct) {
+                showAlert('Nenhum produto selecionado', 'error');
+                return;
+            }
+
+            // Salvar em localStorage para o POS recuperar
+            let cart = JSON.parse(localStorage.getItem('scannerCart') || '[]');
+            const existing = cart.find(p => p.id === appState.lastScannedProduct.id);
+
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({ ...appState.lastScannedProduct, quantity: 1 });
+            }
+
+            localStorage.setItem('scannerCart', JSON.stringify(cart));
+            showAlert(`${appState.lastScannedProduct.name} adicionado ao carrinho!`, 'success');
+
+            setTimeout(() => {
+                goBack();
+            }, 1500);
+        }
+
+        // Histórico
+        function saveHistory() {
+            localStorage.setItem('scanHistory', JSON.stringify(appState.scanHistory));
+        }
+
+        function loadHistory() {
+            const saved = localStorage.getItem('scanHistory');
+            if (saved) {
+                appState.scanHistory = JSON.parse(saved);
+                updateHistoryDisplay();
+            }
+        }
+
+        function updateHistoryDisplay() {
+            const list = document.getElementById('historyList');
+            if (appState.scanHistory.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: #999; padding: 2rem;">Nenhum código lido ainda</div>';
+                return;
+            }
+
+            list.innerHTML = appState.scanHistory.map((item, index) => {
+                const product = mockProducts.find(p => p.sku === item.code);
+                return `
+                    <div class="history-item">
+                        <div>
+                            <div class="history-item-code">${item.code}</div>
+                            <div class="history-item-time">${new Date(item.timestamp).toLocaleString('pt-PT')}</div>
+                            ${product ? `<div style="color: var(--secondary); font-size: 0.9rem; margin-top: 0.3rem;">✓ ${product.name}</div>` : ''}
+                        </div>
+                        <button class="history-item-btn" onclick="copiarParaClipboard('${item.code}')">Copiar</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function clearHistory() {
+            if (confirm('Tem a certeza que deseja limpar o histórico?')) {
+                appState.scanHistory = [];
+                saveHistory();
+                updateHistoryDisplay();
+                showAlert('Histórico limpo', 'success');
+            }
+        }
+
+        // Stats
+        function updateStats() {
+            document.getElementById('scannedCount').textContent = appState.scannedCount;
+            document.getElementById('matchedCount').textContent = appState.matchedCount;
+        }
+
+        // Utilitários
+        function formatMoney(value) {
+            return new Intl.NumberFormat('pt-PT', {
+                style: 'currency',
+                currency: 'MZN'
+            }).format(value);
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+
+        function copiarParaClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showAlert('Código copiado!', 'success');
+            });
+        }
+
+        function requestCameraPermission() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(() => {
+                    document.getElementById('cameraPermissionError').style.display = 'none';
+                    startScanner();
+                })
+                .catch(() => {
+                    showAlert('Permissão negada', 'error');
+                });
+        }
+
+        function goBack() {
+            window.location.href = '/pos.html';
+        }
+    </script>
+</body>
+</html>

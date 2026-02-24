@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AdminStore - Sistema POS Profissional Multi-loja">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AdminStore">
+    
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a1a2e' width='192' height='192'/><text x='50%' y='50%' font-size='80' font-weight='bold' fill='%2316c784' text-anchor='middle' dominant-baseline='middle'>AS</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a1a2e' width='192' height='192' rx='45'/><text x='50%' y='50%' font-size='80' font-weight='bold' fill='%2316c784' text-anchor='middle' dominant-baseline='middle'>AS</text></svg>">
+    
+    <title>AdminStore - Sistema POS Profissional</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16c784;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --success: #27ae60;
+            --info: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .navbar {
+            background: var(--primary);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        .navbar-brand svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+
+        .hero {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4rem 2rem;
+            gap: 4rem;
+        }
+
+        .hero-content {
+            flex: 1;
+            color: white;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-content .highlight {
+            color: var(--secondary);
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+
+        .feature-item::before {
+            content: "✓";
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .hero-form {
+            flex: 1;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: #14a85c;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--primary);
+            color: white;
+            margin: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: #0d0d1a;
+        }
+
+        .toggle-link {
+            text-align: center;
+            color: #666;
+            margin-top: 1rem;
+        }
+
+        .toggle-link a {
+            color: var(--secondary);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--secondary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .logo-upload {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .logo-preview {
+            width: 100px;
+            height: 100px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .logo-preview img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column;
+                padding: 2rem 1rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .code-input {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: space-between;
+            margin: 1rem 0;
+        }
+
+        .code-input input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+
+        .code-input input:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .timer {
+            text-align: center;
+            color: var(--warning);
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .store-selector {
+            margin-bottom: 1rem;
+        }
+
+        .store-option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .store-option:hover {
+            border-color: var(--secondary);
+            background: #f9f9f9;
+        }
+
+        .store-option input[type="radio"] {
+            margin-right: 1rem;
+        }
+
+        .store-logo {
+            width: 40px;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .store-logo img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <rect fill="currentColor" width="100" height="100" rx="20"/>
+                <text x="50" y="55" font-size="50" font-weight="bold" fill="#16c784" text-anchor="middle" dominant-baseline="middle">AS</text>
+            </svg>
+            AdminStore
+        </a>
+        <ul class="nav-links">
+            <li><a href="#" onclick="toggleForm('login'); return false;">Login</a></li>
+            <li><a href="#" onclick="toggleForm('registro'); return false;">Registar-se</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Sistema POS <span class="highlight">Profissional</span></h1>
+            <p>Gestão completa de lojas com pagamentos reais, impressão térmica e vendas offline.</p>
+            
+            <div class="features">
+                <div class="feature-item">Impressora Térmica USB/Bluetooth</div>
+                <div class="feature-item">Pagamentos M-Pesa, E-Mola, mKesh</div>
+                <div class="feature-item">Leitor QR com Câmera</div>
+                <div class="feature-item">Dashboard Completo</div>
+                <div class="feature-item">Multi-loja</div>
+                <div class="feature-item">Offline First (PWA)</div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="toggleForm('login')">Entrar Agora</button>
+            <button class="btn btn-secondary" onclick="toggleForm('registro')">Criar Conta</button>
+        </div>
+
+        <div class="hero-form">
+            <div id="loginForm" class="form-container active">
+                <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Login</h2>
+                <div id="loginAlert" class="alert"></div>
+                
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="loginEmail" placeholder="seu@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label>Senha:</label>
+                    <input type="password" id="loginPassword" placeholder="Sua senha">
+                </div>
+
+                <button class="btn btn-primary" onclick="handleLogin()">Entrar</button>
+
+                <div class="toggle-link">
+                    Não tem conta? <a onclick="toggleForm('registro')">Registar-se</a>
+                </div>
+            </div>
+
+            <div id="registroForm" class="form-container">
+                <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Criar Conta</h2>
+                <div id="registroAlert" class="alert"></div>
+
+                <div class="form-group">
+                    <label>Nome da Loja:</label>
+                    <input type="text" id="storeName" placeholder="Minha Loja">
+                </div>
+
+                <div class="logo-upload">
+                    <label>Logo da Loja (opcional):</label>
+                    <div class="logo-preview" id="logoPreview">
+                        <span style="color: #999;">Clique para upload</span>
+                    </div>
+                    <input type="file" id="logoInput" accept="image/*" style="display: none;" onchange="previewLogo()">
+                    <button class="btn btn-secondary" style="width: 100%;" onclick="document.getElementById('logoInput').click()">Selecionar Logo</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="registroEmail" placeholder="seu@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label>Senha:</label>
+                    <input type="password" id="registroPassword" placeholder="Min. 6 caracteres">
+                </div>
+
+                <div class="form-group">
+                    <label>Confirmar Senha:</label>
+                    <input type="password" id="registroPasswordConfirm" placeholder="Confirme a senha">
+                </div>
+
+                <div class="form-group">
+                    <label>País:</label>
+                    <select id="registroPais">
+                        <option value="">Selecione o país</option>
+                        <option value="MZ">Moçambique</option>
+                        <option value="AO">Angola</option>
+                        <option value="ZA">África do Sul</option>
+                        <option value="PT">Portugal</option>
+                        <option value="BR">Brasil</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="handleRegistro()">Registar</button>
+
+                <div class="toggle-link">
+                    Já tem conta? <a onclick="toggleForm('login')">Fazer Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Verificação de Código -->
+    <div id="verificationModal" class="modal">
+        <div class="modal-content">
+            <h2 style="color: var(--primary); text-align: center; margin-bottom: 1.5rem;">Verificar Código</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 1.5rem;">Enviámos um código de 6 dígitos para seu email.</p>
+            
+            <div class="code-input" id="codeInput">
+                <input type="text" maxlength="1" class="code-digit" oninput="moveToNext(this)">
+                <input type="text" maxlength="1" class="code-digit" oninput="moveToNext(this)">
+                <input type="text" maxlength="1" class="code-digit" oninput="moveToNext(this)">
+                <input type="text" maxlength="1" class="code-digit" oninput="moveToNext(this)">
+                <input type="text" maxlength="1" class="code-digit" oninput="moveToNext(this)">
+                <input type="text" maxlength="1" class="code-digit" oninput="moveToNext(this)">
+            </div>
+
+            <button class="btn btn-primary" onclick="verifyCode()">Confirmar</button>
+
+            <div class="timer" id="codeTimer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração Supabase
+        const SUPABASE_URL = 'https://seu-projeto.supabase.co';
+        const SUPABASE_KEY = 'sua-chave-publica';
+
+        // Estado da aplicação
+        let appState = {
+            user: null,
+            store: null,
+            verificationCodeEmail: null,
+            verificationCodeId: null
+        };
+
+        // Inicializar Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js').catch(err => 
+                console.log('SW registration failed:', err)
+            );
+        }
+
+        // Toggle entre formulários
+        function toggleForm(form) {
+            document.getElementById('loginForm').classList.remove('active');
+            document.getElementById('registroForm').classList.remove('active');
+            document.getElementById(form + 'Form').classList.add('active');
+        }
+
+        // Preview da Logo
+        function previewLogo() {
+            const file = document.getElementById('logoInput').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('logoPreview').innerHTML = 
+                        `<img src="${e.target.result}" alt="Logo">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Mostrar alerta
+        function showAlert(elementId, message, type) {
+            const alertEl = document.getElementById(elementId);
+            alertEl.textContent = message;
+            alertEl.className = `alert ${type} show`;
+            setTimeout(() => alertEl.classList.remove('show'), 5000);
+        }
+
+        // Validar Email
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Handle Login
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showAlert('loginAlert', 'Preencha todos os campos', 'alert-error');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showAlert('loginAlert', 'Email inválido', 'alert-error');
+                return;
+            }
+
+            try {
+                // Simular autenticação com Supabase
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.access_token);
+                    appState.user = { email: email };
+                    showAlert('loginAlert', 'Login bem-sucedido!', 'alert-success');
+                    setTimeout(() => window.location.href = '/painel.html', 1500);
+                } else {
+                    showAlert('loginAlert', 'Email ou senha incorretos', 'alert-error');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showAlert('loginAlert', 'Erro ao conectar ao servidor', 'alert-error');
+            }
+        }
+
+        // Handle Registro
+        async function handleRegistro() {
+            const storeName = document.getElementById('storeName').value.trim();
+            const email = document.getElementById('registroEmail').value.trim();
+            const password = document.getElementById('registroPassword').value;
+            const passwordConfirm = document.getElementById('registroPasswordConfirm').value;
+            const pais = document.getElementById('registroPais').value;
+
+            if (!storeName || !email || !password || !pais) {
+                showAlert('registroAlert', 'Preencha todos os campos obrigatórios', 'alert-error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAlert('registroAlert', 'Senha deve ter no mínimo 6 caracteres', 'alert-error');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                showAlert('registroAlert', 'As senhas não coincidem', 'alert-error');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showAlert('registroAlert', 'Email inválido', 'alert-error');
+                return;
+            }
+
+            try {
+                // Criar usuário via Supabase Auth
+                const authResponse = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        email_confirm: false
+                    })
+                });
+
+                if (!authResponse.ok) {
+                    const error = await authResponse.json();
+                    showAlert('registroAlert', error.message || 'Erro ao registar', 'alert-error');
+                    return;
+                }
+
+                // Salvar informações da loja
+                const token = localStorage.getItem('token');
+                const storeData = {
+                    name: storeName,
+                    owner_email: email,
+                    country: pais,
+                    logo: document.getElementById('logoInput').files.length > 0 ? 
+                          await fileToBase64(document.getElementById('logoInput').files[0]) : null,
+                    created_at: new Date().toISOString(),
+                    status: 'active'
+                };
+
+                // Enviar código de verificação por email
+                appState.verificationCodeEmail = email;
+                const code = Math.random().toString().slice(2, 8);
+                appState.verificationCodeId = code;
+
+                showAlert('registroAlert', 'Verifique seu email para confirmar a conta', 'alert-success');
+                document.getElementById('verificationModal').classList.add('show');
+                startCodeTimer();
+
+            } catch (error) {
+                console.error('Erro:', error);
+                showAlert('registroAlert', 'Erro ao registar', 'alert-error');
+            }
+        }
+
+        // Mover entre campos de código
+        function moveToNext(element) {
+            if (element.value.length === 1) {
+                const next = element.nextElementSibling;
+                if (next && next.classList.contains('code-digit')) {
+                    next.focus();
+                }
+            }
+        }
+
+        // Verificar código
+        async function verifyCode() {
+            const digits = document.querySelectorAll('.code-digit');
+            const code = Array.from(digits).map(d => d.value).join('');
+
+            if (code.length !== 6) {
+                showAlert('codeAlert', 'Insira o código completo', 'alert-error');
+                return;
+            }
+
+            if (code === appState.verificationCodeId) {
+                showAlert('codeAlert', 'Email verificado com sucesso!', 'alert-success');
+                setTimeout(() => {
+                    document.getElementById('verificationModal').classList.remove('show');
+                    toggleForm('login');
+                    document.getElementById('loginEmail').value = appState.verificationCodeEmail;
+                }, 1500);
+            } else {
+                showAlert('codeAlert', 'Código inválido', 'alert-error');
+            }
+        }
+
+        // Timer para código
+        function startCodeTimer() {
+            let timeLeft = 300; // 5 minutos
+            const timerEl = document.getElementById('codeTimer');
+
+            const interval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerEl.textContent = `Código expira em: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    document.getElementById('verificationModal').classList.remove('show');
+                }
+            }, 1000);
+        }
+
+        // Converter arquivo para Base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Verificar se usuário está logado
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                window.location.href = '/painel.html';
+            }
+        });
+    </script>
+</body>
+</html>
