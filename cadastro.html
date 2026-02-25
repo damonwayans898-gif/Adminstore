@@ -1,22 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Registration</title>
+    <title>Registro da Loja</title>
 </head>
 <body>
-    <h1>Register Your Store</h1>
-    <form action="#" method="post">
-        <label for="storeName">Store Name:</label><br>
-        <input type="text" id="storeName" name="storeName" required><br>
-        <label for="ownerName">Owner Name:</label><br>
-        <input type="text" id="ownerName" name="ownerName" required><br>
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" required><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br>
-        <input type="submit" value="Register">
+    <h1>Formulário de Registro da Loja</h1>
+    <form action="/submit" method="post">
+        <label for="store-name">Nome da Loja:</label>
+        <input type="text" id="store-name" name="store-name" required><br><br>
+
+        <label for="owner-name">Nome do Proprietário:</label>
+        <input type="text" id="owner-name" name="owner-name" required><br><br>
+
+        <label for="phone">Telefone:</label>
+        <input type="tel" id="phone" name="phone" pattern="\d{9}" placeholder="Número de Telefone (9 dígitos)" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="province">Província:</label>
+        <select id="province" name="province" required>
+            <option value="Maputo">Maputo</option>
+            <option value="Matola">Matola</option>
+            <option value="Beira">Beira</option>
+            <option value="Nampula">Nampula</option>
+            <option value="Quelimane">Quelimane</option>
+            <!-- Adicionar mais províncias conforme necessário -->
+        </select><br><br>
+
+        <label for="city">Cidade:</label>
+        <input type="text" id="city" name="city" required><br><br>
+
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password" required minlength="8"><br><br>
+
+        <button type="submit">Registrarse</button>
     </form>
 </body>
 </html>
